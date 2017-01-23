@@ -1,56 +1,23 @@
-<!-- BUST(5) -->
-<div id="result-slots-yield-with-default-slot">
-  {{#with-slots as |a b|}}
-    {{a}} {{b}}
-  {{::block-a as |c|}}
-    {{c}}
-  {{::block-b as |d e f|}}
-    {{d}} {{e}} {{f}}
-  {{/with-slots}}
-</div>
+<p>
+  Controller.foo={{foo}}
 
-<div id="expected-slots-yield-with-default-slot">
-  D E F A B C
-</div>
 
-<div id="result-slots-yield-without-default-slot">
-  {{#with-slots::block-a as |c|}}
-    {{c}}
-  {{::block-b as |d e f|}}
-    {{d}} {{e}} {{f}}
-  {{/with-slots}}
-</div>
 
-<div id="expected-slots-yield-without-default-slot">
-  D E F C
-</div>
+  {{x-foo
+      lol=(|b|
+        <p>{{b.title}} foo={{foo}}</p>
+      )
+      wat=(|a|
+        <p>{{a.title}} bar={{bar}}</p>
+      )
 
-<div id="result-slots-yield-with-only-default-slot">
-  {{#with-slots as |a b|}}
-    {{a}} {{b}}
-  {{/with-slots}}
-</div>
+  }}
+</p>
 
-<div id="expected-slots-yield-with-only-default-slot">
-  A B
-</div>
 
-<div id="result-non-polyfilled-component">
-  {{#no-slots as |a b|}}
-    {{a}} {{b}}
-  {{/no-slots}}
-</div>
 
-<div id="expected-non-polyfilled-component">
-  A B
-</div>
 
-<div id="result-consumed-addon-non-polyfilled-component">
-  {{#consumed-addon-component as |a b|}}
-    {{a}} {{b}}
-  {{/consumed-addon-component}}
-</div>
 
-<div id="expected-consumed-addon-non-polyfilled-component">
-  A B
-</div>
+
+
+

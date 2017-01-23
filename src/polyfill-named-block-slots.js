@@ -9,7 +9,9 @@ function isComponentTemplate(relativePath) {
 }
 
 function transformNonComponentTemplate(string) {
-  const transform = new PolyfillNamedBlockSlotsTransform();
+  var self = this;
+  const transform = new PolyfillNamedBlockSlotsTransform({
+  });
   return syntax.print(
     syntax.preprocess(
       transform.accept(
@@ -32,11 +34,6 @@ function transformComponentTemplate(string) {
 
 function transformTemplate(string, relativePath) {
   const normalizedString = stripBom(string);
-
-  if (isComponentTemplate(relativePath)) {
-    return transformComponentTemplate(normalizedString);
-  }
-
   return transformNonComponentTemplate(normalizedString);
 }
 
