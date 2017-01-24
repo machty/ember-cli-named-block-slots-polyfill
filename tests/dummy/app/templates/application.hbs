@@ -1,16 +1,13 @@
 <p>
   Controller.foo={{foo}}
 
-
-
   {{x-foo
       lol=(|b|
-        <p>{{b.title}} foo={{foo}}</p>
+        <p>title={{b.title}} foo={{foo}}</p>
       )
       wat=(|a|
-        <p>{{a.title}} bar={{bar}}</p>
+        <p>title={{a.title}} bar={{bar}}</p>
       )
-
   }}
 </p>
 

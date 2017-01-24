@@ -6,12 +6,15 @@ const hb = require('@sclaxton/handlebars');
 
 const glimmerBuilders = GlimmerSyntax.builders;
 
+var lambdaId = 0;
+
 module.exports = PolyfillNamedBlockSlots;
 
 function PolyfillNamedBlockSlots() {
   Visitor.apply(this, arguments);
   this.mutating = true;
   this.refs = {};
+  this.lambdaTemplates = [];
 }
 
 PolyfillNamedBlockSlots.prototype = Object.create(Visitor.prototype);
@@ -27,10 +30,13 @@ PolyfillNamedBlockSlots.prototype.compileLambdaTemplate = function(templateStrin
   var compiledTemplate = transform.accept(
     hb.parse(templateString)
   );
-  // we have a compiled template, and all the references.
   return {
-    compiledTemplate: compiledTemplate,
+    templateString: GlimmerSyntax.print(GlimmerSyntax.preprocess(compiledTemplate)),
     refs: transform.refs,
+
+    // TODO: we'll need to extend this logic here for future
+    // support for recursive nesting.
+    lambdaTemplates: transform.lambdaTemplates,
   };
 };
 
@@ -42,18 +48,33 @@ PolyfillNamedBlockSlots.prototype.LambdaBlock = function(block) {
   var bpMap = {};
   var hashPairs = [];
   block.blockParams.forEach(function(bp) { bpMap[bp] = true; });
-  Object.keys(data.refs).forEach(function(r) {
+  var refsArray = Object.keys(data.refs);
+  var finalRefsArray = [];
+  refsArray.forEach(function(r) {
     if (!bpMap[r]) {
       // we only want to pass in references that are NOT block params.
       // block params will be accessed via the computed property
       // in the generated .js file.
+      finalRefsArray.push(r);
       hashPairs.push(
         glimmerBuilders.pair(r, glimmerBuilders.path(r))
       );
     }
   });
 
-  return glimmerBuilders.sexpr('component', [glimmerBuilders.string('x-bar')], glimmerBuilders.hash(hashPairs));
+  // TODO: merge any recursively nested lambda templates
+  // this.lambdaTemplates.push.apply(this.lambdaTemplates, data.lambdaTemplates);
+
+  var lambdaTemplate = {
+    name: "anonymous-lambda-" + (lambdaId++),
+    templateString: data.templateString,
+    blockParams: block.blockParams,
+    refs: finalRefsArray,
+  };
+
+  this.lambdaTemplates.push(lambdaTemplate);
+
+  return glimmerBuilders.sexpr('component', [glimmerBuilders.string(lambdaTemplate.name)], glimmerBuilders.hash(hashPairs));
 };
 
 PolyfillNamedBlockSlots.prototype.BlockStatement = function(block) {
@@ -68,7 +89,7 @@ PolyfillNamedBlockSlots.prototype.BlockStatement = function(block) {
     if (slotChain) {
       const slotHashPairs = utils.getNamedHasBlockHashPairs(slotChain);
       const newProgram = builders.slotCaseChainProgram(slotChain, originalLoc);
-      const newHashpairs = hashPairs && hashPairs.length > 0 ? hashPairs.concat(slotHashPairs) : slotHashPairs;
+      const newHashPairs = hashPairs && hashPairs.length > 0 ? hashPairs.concat(slotHashPairs) : slotHashPairs;
 
       return glimmerBuilders.block(
         block.path,

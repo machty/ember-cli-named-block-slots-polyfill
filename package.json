@@ -55,12 +55,14 @@
     "ember-addon"
   ],
   "dependencies": {
-    "broccoli-persistent-filter": "^1.0.3",
-    "ember-cli-version-checker": "^1.0.2",
-    "strip-bom": "^2.0.0",
     "@sclaxton/glimmer-syntax": "^0.0.2",
     "@sclaxton/handlebars": "^0.0.1",
-    "ember-cli-htmlbars": "^1.1.1"
+    "broccoli-caching-writer": "^3.0.3",
+    "broccoli-persistent-filter": "^1.0.3",
+    "ember-cli-htmlbars": "^1.1.1",
+    "ember-cli-version-checker": "^1.0.2",
+    "mkdirp": "^0.5.1",
+    "strip-bom": "^2.0.0"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config",
